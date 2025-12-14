@@ -575,10 +575,10 @@
                 return items.map((item, itemIndex) => {
                     const itemId = `item_${catIndex}_${subCatIndex}_${itemIndex}`;
                     
-                    return `<div class="grid grid-cols-[24px_1fr_60px_60px] sm:grid-cols-[24px_1fr_60px_80px] gap-3 items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors rounded px-2">
+                    return `<div class="grid grid-cols-[24px_1fr_60px] gap-3 items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors rounded px-2">
                                 <!-- Checkbox -->
                                 <div class="flex items-center justify-center h-full">
-                                    <input type="checkbox" id="${itemId}" name="orderItem" value="${item.name} (P${item.price})" 
+                                    <input type="checkbox" id="${itemId}" name="orderItem" value="${item.name}" 
                                         onchange="toggleQuantity(this)"
                                         class="w-5 h-5 text-[#A0785A] rounded focus:ring-[#A0785A] cursor-pointer border-gray-300">
                                 </div>
@@ -595,11 +595,6 @@
                                 <div>
                                     <input type="number" id="qty_${itemId}" name="itemQty" min="1" placeholder="Qty" disabled
                                         class="w-full text-center border border-gray-300 rounded px-1 py-1.5 text-sm focus:outline-none focus:border-[#A0785A] disabled:bg-gray-100 disabled:text-gray-400">
-                                </div>
-                                
-                                <!-- Price -->
-                                <div class="text-sm font-medium text-gray-700 text-right pr-2">
-                                    P ${item.price}
                                 </div>
                             </div>`;
                 }).join('');
