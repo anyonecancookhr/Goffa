@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goffa</title>
+    <!-- GitHub Pages Ready: Ensure image assets are uploaded to the same directory -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- Flatpickr (Date Picker) CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- REQUIRED: EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            /* Theme: Black, White, Light Mocha Brown */
+            --goffa-primary: #000000;
+            --goffa-mocha: #A0785A; /* Light Mocha Brown */
+            --goffa-mocha-light: #D7CCC8;
+            --goffa-mocha-bg: #F5F0EB;
+            --goffa-accent: #A0785A;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+        .main-content {
+            flex-grow: 1;
+        }
+        .text-goffa-accent {
+            color: var(--goffa-accent);
+        }
+        .bg-goffa-accent {
+            background-color: var(--goffa-accent);
+        }
+        .border-goffa-accent {
+            border-color: var(--goffa-accent);
+        }
+        .hover-bg-goffa-dark:hover {
+            background-color: #795548; /* Darker mocha for hover */
+        }
+        
+        /* Custom scrollbar */
+        .menu-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .menu-scroll::-webkit-scrollbar-thumb {
+            background-color: var(--goffa-mocha);
+            border-radius: 4px;
+        }
+        /* Responsive form grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        /* Animations */
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .location-link {
+            transition: all 0.15s ease-in-out;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            display: inline-block;
+        }
+        .location-link:hover {
+            background-color: var(--goffa-mocha-bg);
+            color: var(--goffa-accent);
+        }
+        /* Collapsible icon styling */
+        details[open] > summary .summary-icon {
+            transform: rotate(180deg);
+        }
+        .summary-icon {
+            transition: transform 0.3s ease;
+        }
+        .nested-summary {
+            padding-left: 0.75rem;
+        }
+        /* Custom Notice Box */
+        .notice-box {
+            background-color: var(--goffa-mocha-bg);
+            border: 1px solid var(--goffa-mocha-light);
+            border-radius: 0.75rem;
+        }
+        .option-box {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+        }
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(160, 120, 90, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid var(--goffa-mocha);
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Checkbox custom style */
+        input[type="checkbox"]:checked {
+            background-color: var(--goffa-mocha);
+            border-color: var(--goffa-mocha);
+            color: var(--goffa-mocha);
+        }
+        input[type="radio"]:checked {
+            color: var(--goffa-mocha);
+        }
+        /* Details Summary Styles */
+        details summary {
+            list-style: none;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        /* Flatpickr Customization */
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+            background: var(--goffa-mocha);
+            border-color: var(--goffa-mocha);
+        }
+        
+        /* Focus rings for inputs */
+        input:focus, select:focus, textarea:focus {
+            --tw-ring-color: var(--goffa-mocha);
+            border-color: var(--goffa-mocha);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div id="app" class="main-content flex flex-col items-center p-4 sm:p-8">
+        <!-- Content injected by JS -->
+    </div>
+
+    <footer class="bg-black text-white py-10 px-4 w-full mt-auto">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-10 justify-between">
+                <!-- Left Side: Locations -->
+                <div class="md:w-1/2">
+                    <h3 class="text-xl font-bold mb-6 text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Location
+                    </h3>
+                    <div class="space-y-4 text-gray-300">
+                         <p class="font-medium">F7, 49 Sct. Rallos St, Diliman</p>
+                         <p class="text-sm">Quezon City, 1103 Metro Manila</p>
+                         <p class="text-sm text-[#A0785A] font-semibold mt-2">Open Daily: 8AM - 7PM</p>
+                         <p class="text-sm mt-2"><a href="https://maps.app.goo.gl/ydK8XezRoWBVmHgC9" target="_blank" class="hover:text-[#A0785A] underline">View on Google Maps</a></p>
+                    </div>
+                </div>
+
+                <!-- Right Side: Contact -->
+                <div class="md:w-1/2 md:border-l md:border-gray-800 md:pl-10">
+                    <h3 class="text-xl font-bold mb-6 text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        Contact Us
+                    </h3>
+                    <p class="text-sm text-gray-400 mb-4">Customer Care: 9AM to 6PM</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Landline</span>
+                            <a href="tel:+63286314221" class="text-lg text-white font-bold hover:text-[#A0785A] transition-colors">
+                                +632 8631 4221
+                            </a>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Viber / Mobile</span>
+                            <a href="tel:+639177103227" class="text-lg text-white font-bold hover:text-[#A0785A] transition-colors">
+                                +63917 710 3227
+                            </a>
+                        </div>
+                        <div class="flex flex-col pt-2">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Email</span>
+                            <a href="mailto:orderonline@purpleoven.com.ph" class="text-base text-gray-300 font-medium hover:text-[#A0785A] transition-colors">
+                                orderonline@purpleoven.com.ph
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-10 text-center text-xs text-gray-600 border-t border-gray-900 pt-6">
+                © 2025 Goffa. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Global State and Constants ---
+        const APP_ROOT = document.getElementById('app');
+        
+        // --- ASSET REFERENCES ---
+        const BRAND_LOGO_URL = "Goffa_Logo.png";
+        
+        // --- EMAILJS CONFIGURATION ---
+        // NOTE: These are placeholders. You should replace them with your own keys for a new project.
+        const EMAILJS_PUBLIC_KEY = "zipf8D6huE9iUliyx"; 
+        const EMAILJS_SERVICE_ID = "service_ovc10mr";
+        const EMAILJS_TEMPLATE_ID = "template_99fgo0t";
+
+        // Initialize EmailJS
+        (function() {
+            if(EMAILJS_PUBLIC_KEY && window.emailjs){
+                emailjs.init(EMAILJS_PUBLIC_KEY);
+            }
+        })();
+        
+        let state = {
+            view: 'landing', 
+            selectedBrand: 'Goffa',
+            lastSubmittedFormData: null,
+            isSubmitting: false,
+            lastOrderDetails: null
+        };
+
+        // --- MENU DATA FROM IMAGES ---
+        const goffaMenuData = [
+            {
+                category: "Croissant Sandwiches",
+                note: "(available in a box of 6)",
+                subCategories: [
+                    {
+                        name: "",
+                        items: [
+                            { name: "Honey Ham and Gruyere", price: 230, desc: "Made with love, in Purple Oven butter croissant" },
+                            { name: "Shrimp and Egg", price: 290, desc: "Our most succulent sandwich, topped with alfalfa" },
+                            { name: "Bacon, Egg, and Cheese", price: 230, desc: "The breakfast sandwich" }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "Wraps",
+                note: "(available in a box of 6)",
+                subCategories: [
+                    {
+                        name: "",
+                        items: [
+                            { name: "Chicken Caesar", price: 200, desc: "Grilled chicken, caesar dressing, mixed greens, and bacon bits" },
+                            { name: "Chorizo", price: 200, desc: "Homemade spicy chorizo with garlic aioli, omelette, and tomatoes" }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "Pan de Mie Sandwiches",
+                note: "(available in a box of 6)",
+                subCategories: [
+                    {
+                        name: "",
+                        items: [
+                            { name: "Egg", price: 120, desc: "Simple egg salad" },
+                            { name: "Chicken", price: 145, desc: "Cafe-style chicken filling" },
+                            { name: "Cheese Pimiento", price: 145, desc: "Savory, creamy cheddar cheese" }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "Muffins",
+                note: "(available in a box of 6)",
+                subCategories: [
+                    {
+                        name: "",
+                        items: [
+                            { name: "Blueberry", price: 120, desc: "A light streusel & blueberry topped pastry for breakfast" },
+                            { name: "Pistachio", price: 145, desc: "Made with finely ground and chopped pistachio" }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "Snack Packs",
+                note: "(available in a box of 2)",
+                subCategories: [
+                    {
+                        name: "",
+                        items: [
+                            { name: "Treetop Granola", price: 335, desc: "Oats, almonds, and muscovado" },
+                            { name: "Breakfast Granola", price: 335, desc: "Cornflakes, dried cranberries, and honey" },
+                            { name: "Caramel Walnuts", price: 490, desc: "For snacking on or topping everything with - salads to desserts" },
+                            { name: "Rice Krispies", price: 190, desc: "Melted marshmallows and toasted Rice Krispies" }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "Dips, Spreads or Jams",
+                note: "*each comes with Sourdough Toasts (available in a box of 3)",
+                subCategories: [
+                    {
+                        name: "",
+                        items: [
+                            { name: "Marinara", price: 310, desc: "Stewed tomatoes and mixed herbs" },
+                            { name: "Pesto", price: 425, desc: "Fresh basil and extra virgin olive oil" },
+                            { name: "Sardine Spread", price: 385, desc: "Spanish-style spicy sardines" },
+                            { name: "Chicken Liver Pate", price: 445, desc: "A delicate French inspired spread that hopes to delight" },
+                            { name: "Strawberry Jam", price: 295, desc: "Made with fresh strawberries" },
+                            { name: "Mango Jam", price: 295, desc: "Made with fresh mangoes" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const brands = {
+            Goffa: {
+                theme: 'mocha',
+                description: ``,
+                logo: BRAND_LOGO_URL,
+                menuFiles: [
+                    'Goffa_Boxed_Orders-images-0.jpg',
+                    'Goffa_Boxed_Orders-images-1.jpg',
+                    'Goffa_Boxed_Orders-images-2.jpg',
+                    'Goffa_Boxed_Orders-images-3.jpg',
+                    'Goffa_Boxed_Orders-images-4.jpg',
+                    'Goffa_Boxed_Orders-images-5.jpg'
+                ]
+            }
+        };
+        
+        const timeSlots = Array.from({ length: 11 }, (_, i) => `${(i + 9) % 12 === 0 ? 12 : (i + 9) % 12} ${i + 9 < 12 ? 'AM' : 'PM'}`).slice(0, 11); 
+        
+        const pickUpLocations = [
+            'Scout Rallos, Quezon City'
+        ];
+        
+        // --- View Navigation ---
+
+        function showLanding() {
+            state.view = 'landing';
+            state.selectedBrand = 'Goffa';
+            render();
+            window.scrollTo(0,0);
+        }
+
+        function showMenu(brand) {
+            state.view = 'menu';
+            state.selectedBrand = brand;
+            render();
+            window.scrollTo(0,0);
+        }
+
+        function showOrder() {
+            state.view = 'order_form';
+            state.lastSubmittedFormData = null; 
+            render();
+            window.scrollTo(0,0);
+        }
+
+        function showSuccess() {
+            state.view = 'success';
+            render();
+            window.scrollTo(0,0);
+        }
+
+        // --- HTML Rendering ---
+
+        function renderLanding() {
+            APP_ROOT.classList.add('justify-center');
+            return `
+                <div class="text-center animate-fadeIn w-full max-w-2xl flex flex-col items-center py-10">
+                    <img src="${BRAND_LOGO_URL}" onerror="this.src='https://placehold.co/300x120/000000/fff?text=Goffa'"
+                        alt="Goffa Logo" class="mx-auto mb-8 h-auto max-h-[250px] w-auto object-contain">
+                    
+                    <p class="text-xl text-gray-800 mb-12 max-w-xl leading-relaxed font-light">
+                         Simple, honest, and delicious food.<br>
+                         Prepared fresh for your enjoyment.<br>
+                         Boxed with care.
+                    </p>
+
+                    <button onclick="showMenu('Goffa')"
+                            class="px-12 py-4 text-lg font-semibold text-white rounded-md transition duration-300 shadow-lg bg-black hover:bg-[#A0785A] transform hover:scale-105">
+                        View Menu & Order
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderMenu(brand) {
+            APP_ROOT.classList.remove('justify-center');
+            const data = brands[brand];
+
+            const menuContent = `
+                <div class="flex justify-center items-center mb-6">
+                    <img src="${data.logo}"
+                            onerror="this.src='https://placehold.co/100x60/000000/fff?text=${brand}'"
+                            alt="${brand} Logo" class="h-16 w-auto object-contain mx-auto">
+                </div>
+
+                <div class="h-[calc(100vh-280px)] max-h-[80vh] w-full border border-gray-200 rounded-lg overflow-y-auto menu-scroll shadow-inner bg-[#F9F9F9]">
+                    <div class="space-y-4 p-4">
+                        ${data.menuFiles.map(file => `
+                            <img src="${file}" 
+                                 alt="Menu Page" 
+                                 class="w-full h-auto object-contain rounded shadow-sm border border-gray-100 min-h-[200px] bg-white"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/600x800/f3f4f6/9ca3af?text=Menu+Image:\\n${file}'; this.style.objectFit='contain';">
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-between items-center px-2">
+                    <button onclick="showLanding()" class="px-5 py-2.5 text-sm font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 transition duration-150">
+                        ← Back to Home
+                    </button>
+                    <button onclick="showOrder()"
+                            class="px-8 py-2.5 text-base font-semibold text-white rounded-md transition duration-300 shadow-md bg-black hover:bg-[#A0785A] shadow-lg">
+                        Order Now
+                    </button>
+                </div>
+            `;
+            return `
+                <div class="w-full max-w-4xl animate-fadeIn">
+                    <div class="p-4 sm:p-8 bg-white rounded-xl shadow-xl border border-gray-100">
+                        ${menuContent}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSuccess() {
+            APP_ROOT.classList.add('justify-center');
+            
+            const details = state.lastOrderDetails || {};
+            const orderIdDisplay = details.order_id ? `<p class="text-sm text-gray-500 mb-4 font-mono">Order ID: ${details.order_id}</p>` : '';
+
+            return `
+                <div class="text-center animate-fadeIn w-full max-w-xl flex flex-col items-center bg-white p-10 rounded-xl shadow-2xl border-t-4 border-[#A0785A]">
+                    <div class="w-20 h-20 bg-[#F5F0EB] rounded-full flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#A0785A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Order Sent!</h2>
+                    ${orderIdDisplay}
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        We have received your order details.<br>
+                        Our team will contact you shortly to confirm availability and payment.
+                    </p>
+                    
+                    <button onclick="showLanding()" class="px-8 py-3 bg-black text-white font-medium rounded-md hover:bg-[#A0785A] transition duration-300">
+                        Return to Home
+                    </button>
+                </div>
+            `;
+        }
+
+        // --- Form Functions ---
+
+        function toggleQuantity(checkbox) {
+            const qtyInputId = `qty_${checkbox.id}`;
+            const qtyInput = document.getElementById(qtyInputId);
+            if (qtyInput) {
+                qtyInput.disabled = !checkbox.checked;
+                if (checkbox.checked) {
+                    qtyInput.focus();
+                    qtyInput.value = '1';
+                } else {
+                    qtyInput.value = '';
+                }
+            }
+        }
+        
+        function handleOrderTypeChange(type) {
+            const pickupSelect = document.getElementById('pickupSelect');
+            const deliveryNoticeContainer = document.getElementById('deliveryNoticeContainer');
+            const deliveryInput = document.getElementById('deliveryInput');
+            const landmarkInput = document.getElementById('landmarkInput');
+            const locationLabel = document.getElementById('locationLabel');
+            const giftSection = document.getElementById('giftSection');
+
+            if (type === 'Pick Up') {
+                pickupSelect.classList.remove('hidden');
+                pickupSelect.required = true;
+                
+                deliveryNoticeContainer.classList.add('hidden');
+                
+                deliveryInput.classList.add('hidden');
+                deliveryInput.required = false;
+                landmarkInput.classList.add('hidden');
+                giftSection.classList.add('hidden');
+                
+                locationLabel.innerText = 'Store Location *';
+                deliveryInput.value = ''; 
+            } else {
+                pickupSelect.classList.add('hidden');
+                pickupSelect.required = false;
+                
+                deliveryNoticeContainer.classList.remove('hidden');
+                
+                deliveryInput.classList.remove('hidden');
+                deliveryInput.required = true;
+                landmarkInput.classList.remove('hidden');
+                giftSection.classList.remove('hidden');
+                
+                locationLabel.innerText = 'Delivery Address *';
+                pickupSelect.selectedIndex = 0; 
+            }
+        }
+
+        function toggleGiftFields(checkbox) {
+            const recipientFields = document.getElementById('recipientFields');
+            const nameInput = recipientFields.querySelector('input[name="recipientName"]');
+            const mobileInput = recipientFields.querySelector('input[name="recipientMobile"]');
+
+            if (checkbox.checked) {
+                recipientFields.classList.remove('hidden');
+                nameInput.required = true;
+                mobileInput.required = true;
+            } else {
+                recipientFields.classList.add('hidden');
+                nameInput.required = false;
+                mobileInput.required = false;
+                nameInput.value = '';
+                mobileInput.value = '';
+            }
+        }
+
+        function getNextOrderNumber() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const randomSuffix = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `${year}${mm}${dd}-${randomSuffix}`;
+        }
+        
+        function checkItemSelection() {
+             const checkboxes = document.querySelectorAll('input[name="orderItem"]:checked');
+             let selectedCount = 0;
+
+             checkboxes.forEach(cb => {
+                const qtyInputId = `qty_${cb.id}`;
+                const qtyVal = parseInt(document.getElementById(qtyInputId).value || '0');
+                if (qtyVal > 0) {
+                    selectedCount++;
+                }
+            });
+            return selectedCount;
+        }
+
+        function renderGoffaMenuSelection() {
+            let html = '';
+            html += `<p class="text-sm text-gray-500 mb-4 bg-gray-50 p-3 rounded border border-gray-200">Please check on the product(s) of your choice and indicate the quantity to order.</p>`;
+            html += `<div id="itemErrorContainer" class="mb-4 text-red-500 text-sm font-semibold"></div>`;
+
+            const renderItemFields = (items, catIndex, subCatIndex) => {
+                return items.map((item, itemIndex) => {
+                    const itemId = `item_${catIndex}_${subCatIndex}_${itemIndex}`;
+                    
+                    return `<div class="grid grid-cols-[24px_1fr_60px_60px] sm:grid-cols-[24px_1fr_60px_80px] gap-3 items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors rounded px-2">
+                                <!-- Checkbox -->
+                                <div class="flex items-center justify-center h-full">
+                                    <input type="checkbox" id="${itemId}" name="orderItem" value="${item.name} (P${item.price})" 
+                                        onchange="toggleQuantity(this)"
+                                        class="w-5 h-5 text-[#A0785A] rounded focus:ring-[#A0785A] cursor-pointer border-gray-300">
+                                </div>
+                                
+                                <!-- Name & Desc -->
+                                <div class="flex flex-col">
+                                    <label for="${itemId}" class="text-sm text-gray-800 font-semibold cursor-pointer select-none">
+                                        ${item.name}
+                                    </label>
+                                    ${item.desc ? `<span class="text-xs text-gray-500">${item.desc}</span>` : ''}
+                                </div>
+                                
+                                <!-- Qty -->
+                                <div>
+                                    <input type="number" id="qty_${itemId}" name="itemQty" min="1" placeholder="Qty" disabled
+                                        class="w-full text-center border border-gray-300 rounded px-1 py-1.5 text-sm focus:outline-none focus:border-[#A0785A] disabled:bg-gray-100 disabled:text-gray-400">
+                                </div>
+                                
+                                <!-- Price -->
+                                <div class="text-sm font-medium text-gray-700 text-right pr-2">
+                                    P ${item.price}
+                                </div>
+                            </div>`;
+                }).join('');
+            };
+
+            goffaMenuData.forEach((category, catIndex) => {
+                // Main category is initially collapsed (no 'open' attribute) - UPDATED: removed 'open' attribute
+                html += `<div class="mb-4 border border-gray-200 rounded-md overflow-hidden bg-white shadow-sm">`;
+                html += `
+                    <details class="group">
+                        <summary class="flex justify-between items-center cursor-pointer p-4 bg-white hover:bg-[#F5F0EB] transition-colors">
+                            <div class="flex flex-col">
+                                <h3 class="text-lg font-bold text-black">${category.category}</h3>
+                                ${category.note ? `<span class="text-xs text-[#A0785A] font-medium">${category.note}</span>` : ''}
+                            </div>
+                            <span class="summary-icon text-gray-400 transform transition-transform duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                        </summary>
+                        <div class="p-2 border-t border-gray-100 animate-fadeIn">
+                `;
+                
+                category.subCategories.forEach((subCat, subCatIndex) => {
+                    if (subCat.name) {
+                        html += `
+                            <div class="mb-3">
+                                <h4 class="text-md font-semibold text-gray-700 px-2 py-1">${subCat.name}</h4>
+                                <div class="px-1">
+                                    ${renderItemFields(subCat.items, catIndex, subCatIndex)}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        html += `<div class="px-1 mb-1">`;
+                        html += renderItemFields(subCat.items, catIndex, subCatIndex);
+                        html += `</div>`;
+                    }
+                });
+
+                html += `</div></details></div>`;
+            });
+
+            return html;
+        }
+
+        function renderOrderForm() {
+            APP_ROOT.classList.remove('justify-center');
+            
+            const formHtml = `
+                <div class="w-full max-w-4xl animate-fadeIn mb-10">
+                    
+                    <!-- Added Logo Block -->
+                    <div class="flex justify-center mb-8">
+                        <img src="${BRAND_LOGO_URL}" onerror="this.src='https://placehold.co/150x60/000000/fff?text=Goffa'"
+                            alt="Goffa Logo" class="h-20 w-auto object-contain">
+                    </div>
+
+                    <!-- Title and Back Button -->
+                    <div class="relative w-full mb-8 px-2 sm:px-0">
+                        <button type="button" onclick="showMenu('Goffa')" class="absolute left-0 top-1 px-4 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100 transition duration-150">
+                            ← Menu
+                        </button>
+                        <h2 class="text-3xl text-center font-light text-gray-900 tracking-wide">How to Order</h2>
+                    </div>
+
+                    <form id="orderForm" onsubmit="submitOrder(event)" class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                        
+                        <!-- Contact Info Section - REVISED LAYOUT -->
+                        <div class="p-6 sm:p-8 border-b border-gray-200 bg-[#F9F9F9]">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Office Hours</h3>
+                            <p class="text-sm text-gray-600 mb-6">Our team is available to assist you with, receive, and facilitate your order daily from 9AM to 6PM.</p>
+                            
+                            <div class="flex flex-col gap-6">
+                                <!-- Option 1 -->
+                                <div class="bg-white p-5 rounded border border-gray-200 shadow-sm w-full">
+                                    <h4 class="font-bold text-[#A0785A] mb-2 uppercase text-sm tracking-wider">Option 1: Call Us</h4>
+                                    <p class="text-sm text-gray-700 mb-3">For orders today, please give us a call.</p>
+                                    <div class="flex flex-col sm:flex-row sm:gap-6 gap-2">
+                                        <div class="text-sm">
+                                            <span class="text-gray-500 font-medium">Landline:</span>
+                                            <a href="tel:+63286314221" class="text-gray-900 font-bold hover:underline ml-1">+632 8631 4221</a>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500 font-medium">Mobile / Viber:</span>
+                                            <a href="tel:+639177103227" class="text-gray-900 font-bold hover:underline ml-1">+63917 710 3227</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Option 2 -->
+                                <div class="bg-white p-5 rounded border border-gray-200 shadow-sm w-full">
+                                    <h4 class="font-bold text-[#A0785A] mb-2 uppercase text-sm tracking-wider">Option 2: Order Online</h4>
+                                    <p class="text-sm text-gray-700">For orders from tomorrow onwards, please provide us with the details below. We will contact you as soon as we can confirm your order.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 sm:p-10 space-y-10">
+                            
+                            <!-- Customer Details -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">Customer Details</h3>
+                                <div class="form-grid">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Full Name *</label>
+                                        <input type="text" name="customerName" required class="p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none">
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Mobile Number *</label>
+                                        <input type="tel" name="customerMobile" required class="p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none">
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Email Address *</label>
+                                        <input type="email" name="customerEmail" required class="p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Logistics -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">Delivery / Pick Up</h3>
+                                
+                                <div class="flex gap-6 mb-4">
+                                    <label class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded border border-gray-200 hover:border-[#A0785A] transition">
+                                        <input type="radio" name="orderType" value="Pick Up" checked onchange="handleOrderTypeChange('Pick Up')" class="text-black focus:ring-[#A0785A] h-4 w-4">
+                                        <span class="font-medium text-sm">Pick Up</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded border border-gray-200 hover:border-[#A0785A] transition">
+                                        <input type="radio" name="orderType" value="Delivery" onchange="handleOrderTypeChange('Delivery')" class="text-black focus:ring-[#A0785A] h-4 w-4">
+                                        <span class="font-medium text-sm">Delivery</span>
+                                    </label>
+                                </div>
+
+                                <!-- Delivery Notice -->
+                                <div id="deliveryNoticeContainer" class="notice-box p-4 hidden">
+                                    <p class="text-sm text-[#5D4037]">
+                                        We can arrange for delivery to your home, within Metro Manila. Please provide the delivery details below.
+                                    </p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="flex flex-col">
+                                        <label id="locationLabel" class="text-xs font-bold text-gray-500 uppercase mb-1">Store Location *</label>
+                                        
+                                        <!-- Pickup Select -->
+                                        <select id="pickupSelect" name="pickupLocation" required class="p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none bg-white">
+                                            <option value="" disabled selected>Select a branch...</option>
+                                            ${pickUpLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('')}
+                                        </select>
+
+                                        <!-- Delivery Input -->
+                                        <input type="text" id="deliveryInput" name="deliveryAddress" placeholder="Enter complete delivery address" class="hidden p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none">
+                                    </div>
+                                    
+                                    <div class="flex flex-col">
+                                        <input type="text" id="landmarkInput" name="landmark" placeholder="Nearest Landmark" class="hidden p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none mt-2">
+                                    </div>
+                                </div>
+
+                                <div class="form-grid mt-4">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Date *</label>
+                                        <input type="text" id="datePicker" name="orderDate" required placeholder="Select Order Date..." class="p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none bg-white">
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Time *</label>
+                                        <select name="orderTime" required class="p-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none bg-white">
+                                            <option value="" disabled selected>Select time...</option>
+                                            ${timeSlots.map(t => `<option value="${t}">${t}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gift Section -->
+                            <div id="giftSection" class="hidden p-5 option-box bg-gray-50 border border-dashed border-gray-300">
+                                <label class="flex items-center gap-2 mb-4 cursor-pointer">
+                                    <input type="checkbox" name="isGift" onchange="toggleGiftFields(this)" class="rounded text-black focus:ring-black h-4 w-4">
+                                    <span class="font-bold text-gray-800 text-sm uppercase tracking-wide">Send as Gift?</span>
+                                </label>
+                                
+                                <div id="recipientFields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeIn">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Recipient Name *</label>
+                                        <input type="text" name="recipientName" class="p-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none">
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Recipient Mobile *</label>
+                                        <input type="tel" name="recipientMobile" class="p-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none">
+                                    </div>
+                                    <div class="col-span-1 md:col-span-2 flex flex-col">
+                                        <label class="text-xs font-bold text-gray-500 uppercase mb-1">Dedication / Note</label>
+                                        <textarea name="dedication" rows="2" class="p-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#A0785A] outline-none"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Menu Items -->
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2 mb-6">Select Items</h3>
+                                ${renderGoffaMenuSelection()}
+                            </div>
+                            
+                            <!-- Important Notice Block -->
+                            <div class="bg-[#F5F0EB] border border-[#D7CCC8] rounded p-5 mb-2">
+                                <p class="font-bold text-[#A0785A] mb-1">Important Notice:</p>
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                    As we bake in limited quantities daily, please allow us to check the availability of your order. We shall call you as soon as we can confirm your order.
+                                </p>
+                            </div>
+
+                            <!-- Submit -->
+                             <div class="pt-6 border-t border-gray-200 flex flex-col gap-4 items-center"> 
+                                <button type="submit" id="submitBtn" class="py-4 px-16 bg-black text-white font-bold text-lg uppercase tracking-widest rounded hover:bg-[#A0785A] transition shadow-lg">
+                                    Submit Order
+                                </button>
+                                <p class="text-xs text-gray-400">By clicking submit, you agree to our privacy policy.</p>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+                    <div class="bg-white p-8 rounded shadow-2xl border border-gray-100 flex flex-col items-center">
+                        <div class="spinner mb-4"></div>
+                        <p class="font-semibold text-gray-800 tracking-wide">SENDING ORDER...</p>
+                    </div>
+                </div>
+            `;
+            
+            APP_ROOT.innerHTML = formHtml;
+
+            // Initialize Flatpickr
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextYear = new Date();
+            nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+            flatpickr("#datePicker", {
+                minDate: tomorrow,
+                maxDate: nextYear,
+                dateFormat: "Y-m-d",
+                disable: [
+                    function(date) {
+                        // Example holidays, adjust as needed
+                        const m = date.getMonth(); 
+                        const d = date.getDate();
+                        if (m === 11 && d === 25) return true; // Dec 25
+                        if (m === 0 && d === 1) return true;   // Jan 1
+                        return false;
+                    }
+                ]
+            });
+        }
+
+        function render() {
+            if (state.view === 'landing') {
+                APP_ROOT.innerHTML = renderLanding();
+            } else if (state.view === 'menu') {
+                APP_ROOT.innerHTML = renderMenu(state.selectedBrand);
+            } else if (state.view === 'order_form') {
+                renderOrderForm();
+            } else if (state.view === 'success') {
+                APP_ROOT.innerHTML = renderSuccess();
+            }
+        }
+        
+        async function submitOrder(e) {
+            e.preventDefault();
+            
+            if (state.isSubmitting) return;
+
+            // 1. Validation
+            const selectedItemsCount = checkItemSelection();
+            if (selectedItemsCount === 0) {
+                const errorContainer = document.getElementById('itemErrorContainer');
+                errorContainer.innerText = "⚠️ Please select at least one item to order.";
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            } else {
+                document.getElementById('itemErrorContainer').innerText = "";
+            }
+
+            // 2. Gather Data
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            // Build Item List String
+            let orderSummary = "";
+            const checkboxes = form.querySelectorAll('input[name="orderItem"]:checked');
+            checkboxes.forEach(cb => {
+                const qtyInputId = `qty_${cb.id}`;
+                const qty = document.getElementById(qtyInputId).value;
+                const name = cb.value;
+                orderSummary += `• ${qty} x ${name}\n`;
+            });
+
+            const orderId = getNextOrderNumber();
+            const orderType = formData.get('orderType');
+            const location = orderType === 'Pick Up' ? formData.get('pickupLocation') : formData.get('deliveryAddress') + (formData.get('landmark') ? ` (Landmark: ${formData.get('landmark')})` : '');
+            
+            const orderDateStr = formData.get('orderDate'); // YYYY-MM-DD
+            
+            const fullDetails = 
+`Order ID: ${orderId}
+Name: ${formData.get('customerName')}
+Mobile: ${formData.get('customerMobile')}
+Email: ${formData.get('customerEmail')}
+Type: ${orderType}
+Location: ${location}
+Date: ${orderDateStr}
+Time: ${formData.get('orderTime')}
+Gift: ${formData.get('isGift') ? 'Yes' : 'No'}
+${formData.get('isGift') ? `Recipient: ${formData.get('recipientName')} (${formData.get('recipientMobile')})\nDedication: ${formData.get('dedication')}` : ''}
+
+Items:
+${orderSummary}`;
+
+            // Generate Subject Line: Goffa Order - Date - Order Number
+            const subjectLine = `Goffa Order - ${orderDateStr} - ${orderId}`;
+
+            const templateParams = {
+                // Pass Subject Line variable
+                subject: subjectLine,
+                email_subject: subjectLine, // Sending as both common keys just in case
+
+                order_id: orderId,
+                customer_name: formData.get('customerName'),
+                customer_email: formData.get('customerEmail'),
+                customer_mobile: formData.get('customerMobile'),
+                order_type: orderType,
+                location_address: location,
+                order_date: orderDateStr,
+                order_time: formData.get('orderTime'),
+                is_gift: formData.get('isGift') ? 'YES' : 'NO',
+                recipient_details: formData.get('isGift') ? 
+                    `Name: ${formData.get('recipientName')}\nMobile: ${formData.get('recipientMobile')}\nNote: ${formData.get('dedication')}` : 'N/A',
+                order_summary: orderSummary,
+                message: fullDetails,
+                my_message: fullDetails
+            };
+
+            // 3. Save details and Send Email
+            state.lastOrderDetails = templateParams; 
+            state.isSubmitting = true;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = true;
+
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                showSuccess(); 
+
+            } catch (error) {
+                console.error('FAILED...', error);
+                alert("Failed to send order. Please try again or contact us directly.");
+            } finally {
+                state.isSubmitting = false;
+                const loading = document.getElementById('loadingOverlay');
+                if(loading) loading.classList.add('hidden');
+                const btn = document.getElementById('submitBtn');
+                if(btn) btn.disabled = false;
+            }
+        }
+
+        // --- Init ---
+        (function() {
+            render();
+        })();
+
+    </script>
+</body>
+</html>
